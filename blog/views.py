@@ -23,13 +23,11 @@ def serialize_tag(tag):
         'posts_with_tag': len(Post.objects.filter(tags=tag)),
     }
 
-def get_count_post():
-    pass
-
 def index(request):
 
     most_popular_posts = []  # TODO. Как это посчитать?
-    most_popular_posts = Post.objects.annotate(Count('likes')).order_by('-likes__count')[:5]
+    most_popular_posts = Post.objects.prefetch_related('author').annotate(Count('likes')).order_by('-likes__count')[:5]
+    # most_popular_posts = Post.objects.annotate(Count('likes')).order_by('-likes__count')[:5]
 
     fresh_posts = Post.objects.order_by('published_at')
     most_fresh_posts = list(fresh_posts)[-5:]
@@ -78,7 +76,9 @@ def post_detail(request, slug):
     most_popular_tags = Tag.objects.annotate(Count('posts')).order_by('-posts__count')[:5]
 
     most_popular_posts = []  # TODO. Как это посчитать?
-    most_popular_posts = Post.objects.annotate(Count('likes')).order_by('-likes__count')[:5]
+    # most_popular_posts = Post.objects.annotate(Count('likes')).order_by('-likes__count')[:5]
+    most_popular_posts = Post.objects.prefetch_related('author').annotate(Count('likes')).order_by('-likes__count')[:5]
+
 
     context = {
         'post': serialized_post,
@@ -96,7 +96,8 @@ def tag_filter(request, tag_title):
     most_popular_tags = Tag.objects.annotate(Count('posts')).order_by('-posts__count')[:5]
 
     most_popular_posts = []  # TODO. Как это посчитать?
-    most_popular_posts = Post.objects.annotate(Count('likes')).order_by('-likes__count')[:5]
+    # most_popular_posts = Post.objects.annotate(Count('likes')).order_by('-likes__count')[:5]
+    most_popular_posts = Post.objects.prefetch_related('author').annotate(Count('likes')).order_by('-likes__count')[:5]
 
     related_posts = tag.posts.all()[:20]
 
