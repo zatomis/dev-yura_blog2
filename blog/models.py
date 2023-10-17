@@ -29,24 +29,6 @@ class TagQuerySet(models.QuerySet):
         popular_tags = self.annotate(Count('posts', distinct=True)).order_by('-posts__count')
         return popular_tags
 
-# class TagQuerySet(models.QuerySet):
-
-    # def popular(self):
-    #     popular_tags = self.annotate(
-    #         num_related_posts=Count('posts')).order_by('-num_related_posts')
-    #     return popular_tags
-
-
-    # def popular(self):
-    #     return self.annotate(Count('posts')).order_by('-posts__count')
-
-    # def popular(self):
-    #     return self.annotate(Count('posts')).order_by('-posts__count')
-
-
-
-
-
 
 class Post(models.Model):
     title = models.CharField('Заголовок', max_length=200)
@@ -54,7 +36,6 @@ class Post(models.Model):
     slug = models.SlugField('Название в виде url', max_length=200)
     image = models.ImageField('Картинка')
     published_at = models.DateTimeField('Дата и время публикации')
-    objects = PostQuerySet.as_manager()
 
     author = models.ForeignKey(
         User,
@@ -77,6 +58,8 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post_detail', args={'slug': self.slug})
 
+    objects = PostQuerySet.as_manager()
+
     class Meta:
         ordering = ['-published_at']
         verbose_name = 'пост'
@@ -85,7 +68,6 @@ class Post(models.Model):
 
 class Tag(models.Model):
     title = models.CharField('Тег', max_length=20, unique=True)
-    objects = TagQuerySet.as_manager()
 
     def __str__(self):
         return self.title
@@ -95,6 +77,8 @@ class Tag(models.Model):
 
     def get_absolute_url(self):
         return reverse('tag_filter', args={'tag_title': self.slug})
+
+    objects = TagQuerySet.as_manager()
 
     class Meta:
         ordering = ['title']
